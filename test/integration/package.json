@@ -1,0 +1,9 @@
+{
+  "name": "identity-v1-integration-tests",
+  "version": "0.0.1",
+  "description": "",
+  "main": "init.js",
+  "devDependencies": {
+    "apickli": "^1.7.4"
+  }
+}

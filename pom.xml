@@ -34,24 +34,83 @@
 		<commit></commit>
 		<branch>a local</branch>
     </properties>
-
-
+	
 	<!-- This is where you add the environment specific properties under various profile names -->
 	<!-- For apigee.options, refer to "Advanced Configuration Options" under https://github.com/apigee/apigee-deploy-maven-plugin#pom-xml-sample -->
 	<profiles>
 		<profile>		
-			<id>test</id>
+			<id>dev</id>
 			<properties>
 				<apigee.profile>dev</apigee.profile>
 				<apigee.env>dev</apigee.env>
 				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
-				<apigee.apiversion>v1</apigee.apiversion>
-				<!-- value of version in  https://api.enterprise.apigee.com/v2 -->
+				<apigee.apiversion>v1</apigee.apiversion> <!-- value of version in  https://api.enterprise.apigee.com/v2 -->
 				<apigee.org>${env.APIGEE_ORG}</apigee.org>
 				<apigee.username>${env.APIGEE_USERNAME}</apigee.username>
 				<apigee.password>${env.APIGEE_PASSWORD}</apigee.password>
 				<apigee.options>update</apigee.options>
 				<api.northbound.domain>${env.API_DOMAIN_TEST}</api.northbound.domain>
+				<cucumber.cmd>./node_modules/cucumber/bin/cucumber.js integration/ --tags ~@WorkInProgress --tags ~@future --no-colors</cucumber.cmd>
+			</properties>
+		</profile>
+		<profile>		
+			<id>perf</id>
+			<properties>
+				<apigee.profile>perf</apigee.profile>
+				<apigee.env>perf</apigee.env>
+				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+				<apigee.apiversion>v1</apigee.apiversion> <!-- value of version in  https://api.enterprise.apigee.com/v2 -->
+				<apigee.org>${env.APIGEE_ORG}</apigee.org>
+				<apigee.username>${env.APIGEE_USERNAME}</apigee.username>
+				<apigee.password>${env.APIGEE_PASSWORD}</apigee.password>
+				<apigee.options>update</apigee.options>
+				<api.northbound.domain>${env.API_DOMAIN_TEST}</api.northbound.domain>
+				<cucumber.cmd>./node_modules/cucumber/bin/cucumber.js integration/ --tags ~@WorkInProgress --tags ~@future --tags ~@dev --no-colors</cucumber.cmd>
+			</properties>
+		</profile>
+		<profile>		
+			<id>sit</id>
+			<properties>
+				<apigee.profile>sit</apigee.profile>
+				<apigee.env>sit</apigee.env>
+				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+				<apigee.apiversion>v1</apigee.apiversion> <!-- value of version in  https://api.enterprise.apigee.com/v2 -->
+				<apigee.org>${env.APIGEE_ORG}</apigee.org>
+				<apigee.username>${env.APIGEE_USERNAME}</apigee.username>
+				<apigee.password>${env.APIGEE_PASSWORD}</apigee.password>
+				<apigee.options>update</apigee.options>
+				<api.northbound.domain>${env.API_DOMAIN_TEST}</api.northbound.domain>
+				<cucumber.cmd>./node_modules/cucumber/bin/cucumber.js integration/ --tags ~@WorkInProgress --tags ~@future --tags ~@dev --no-colors</cucumber.cmd>
+			</properties>
+		</profile>
+		<profile>		
+			<id>stg</id>
+			<properties>
+				<apigee.profile>stg</apigee.profile>
+				<apigee.env>stg</apigee.env>
+				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+				<apigee.apiversion>v1</apigee.apiversion> <!-- value of version in  https://api.enterprise.apigee.com/v2 -->
+				<apigee.org>${env.APIGEE_ORG}</apigee.org>
+				<apigee.username>${env.APIGEE_USERNAME}</apigee.username>
+				<apigee.password>${env.APIGEE_PASSWORD}</apigee.password>
+				<apigee.options>update</apigee.options>
+				<api.northbound.domain>${env.API_DOMAIN_TEST}</api.northbound.domain>
+				<cucumber.cmd>./node_modules/cucumber/bin/cucumber.js integration/ --tags ~@WorkInProgress --tags ~@future --tags ~@dev --no-colors</cucumber.cmd>
+			</properties>
+		</profile>
+		<profile>		
+			<id>uat</id>
+			<properties>
+				<apigee.profile>uat</apigee.profile>
+				<apigee.env>uat</apigee.env>
+				<apigee.hosturl>https://api.enterprise.apigee.com</apigee.hosturl>
+				<apigee.apiversion>v1</apigee.apiversion> <!-- value of version in  https://api.enterprise.apigee.com/v2 -->
+				<apigee.org>${env.APIGEE_ORG}</apigee.org>
+				<apigee.username>${env.APIGEE_USERNAME}</apigee.username>
+				<apigee.password>${env.APIGEE_PASSWORD}</apigee.password>
+				<apigee.options>update</apigee.options>
+				<api.northbound.domain>${env.API_DOMAIN_TEST}</api.northbound.domain>
+				<cucumber.cmd>./node_modules/cucumber/bin/cucumber.js integration/ --tags ~@WorkInProgress --tags ~@future --tags ~@dev --no-colors</cucumber.cmd>
 			</properties>
 		</profile>
     </profiles>
@@ -62,7 +121,7 @@
 				<plugin>
 					<groupId>io.apigee.build-tools.enterprise4g</groupId>
 					<artifactId>apigee-edge-maven-plugin</artifactId>
-					<version>1.0.0</version>
+					<version>1.1.5</version>
 				</plugin>
 			</plugins>
 		</pluginManagement> 
@@ -77,7 +136,7 @@
 				<executions>
 					<execution>
 						<id>jslint</id>
-						<phase>package</phase>
+						<phase>process-sources</phase>
 						<goals>
 							<goal>lint</goal>
 						</goals>
@@ -94,32 +153,86 @@
 					<reporter>jslint</reporter>
 				</configuration>
 			</plugin>
+
+			<!-- insert flow fragment dependencies from common-proxy -->
+            <plugin>
+                <groupId>io.apigee.build-tools.enterprise4g</groupId>
+                <artifactId>proxy-dependency-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <executions>
+                    <execution>
+                        <id>flow-frag-bundle-step</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                        <configuration>
+                            <proxySrcDir>.</proxySrcDir>
+                            <proxyDestDir>${target.root.dir}</proxyDestDir>
+                            <proxyRefs>
+                                <proxyRef>./common-proxy</proxyRef>
+                            </proxyRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 			
-			<!-- copy the full apiproxy folder to target folder -->
+					
 			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>copy-test-resources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${target.root.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.root.dir}</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>test/**</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.2</version>
 				<executions>
 					<execution>
-						<id>copy-resources</id>
-						<phase>package</phase>
+						<phase>prepare-package</phase>
 						<goals>
-							<goal>copy-resources</goal>
+							<goal>replace</goal>
 						</goals>
-						<configuration>
-							 <!--this is important -->
-							<overwrite>true</overwrite>
-							 <!--target -->
-							<outputDirectory>${target.root.dir}/apiproxy</outputDirectory>
-							<resources>
-								<resource>
-									 <!--source -->
-									<directory>${project.root.dir}/apiproxy</directory>
-								</resource>
-							</resources>
-						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<basedir>${target.root.dir}</basedir>
+					<includes>
+						<include>apiproxy/proxies/default.xml</include>						
+					</includes>
+					<replacements>						
+						<replacement>
+							<token>@description</token>
+							<value>commit ${commit} from ${branch} branch by ${user.name}</value>
+						</replacement>
+						<replacement>
+							<token>"metrobank-nonprod-dev.apigee.net"</token>
+							<value>"metrobank-nonprod-${apigee.env}.apigee.net"</value>
+						</replacement>
+					</replacements>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -144,6 +257,43 @@
 				</executions>
 			</plugin>
 
+			<!-- tests here -->
+			<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.3.2</version>
+                <executions>
+                    <execution>
+                        <id>exec-npm-install-for-test</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>${target.root.dir}/test</workingDirectory>
+                            <commandlineArgs>
+                                install
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>exec-integration-tests</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>node</executable>
+                            <workingDirectory>${target.root.dir}/test</workingDirectory>
+                            <commandlineArgs>
+                                ${cucumber.cmd}
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
 			<!-- cleaning dirs -->
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
@@ -165,7 +315,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+            </plugin>
 
 
 		</plugins>

@@ -1,13 +1,14 @@
 //build time configuration - see https://github.com/apigee/apigee-deploy-maven-plugin#step-3-create-and-configure-config-json
 {
-    "configurations": [{
-        "name": "test",
+    "configurations": [
+    {
+        "name": "dev",
         "policies": [],
         "proxies": [],
         "targets": []
     },
     {
-        "name": "prod",
+        "name": "test",
         "policies": [],
         "proxies": [],
         "targets": []
