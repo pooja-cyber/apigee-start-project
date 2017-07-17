@@ -1,5 +1,5 @@
 {
-  "name": "identity-api-v1-integration-tests",
+  "name": "test-integration-tests",
   "description": "Mock integration tests",
   "version": "1.0.0",
   "devDependencies": {
